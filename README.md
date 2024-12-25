@@ -90,7 +90,7 @@ I used ChatGPT to generate a full year planning and monthly training schedules i
 ## Support Intervals.icu
 Make sure to subscribe to Intervals.icu to support the hard work David Tinker puts into maintaining this incredible tool for athletes!
 
-##Contributing
+## Contributing
 Feel free to contribute to the project by submitting issues or pull requests. Contributions are welcome!
 
 ## License
