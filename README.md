@@ -27,8 +27,8 @@ A Python script to send training events from a JSON file to the [Intervals.icu](
 4. **Configure the Script**
    - Open the upload_trainings.py file.
    - Replace the placeholders:
-      your_api_key with your API key from Intervals.icu.
-      your_athlete_id with your athlete ID.
+        - your_api_key with your API key from Intervals.icu.
+        - your_athlete_id with your athlete ID.
 
 6. **Prepare Your JSON File**
 
