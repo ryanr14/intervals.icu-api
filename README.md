@@ -20,17 +20,17 @@ A Python script to send training events from a JSON file to the [Intervals.icu](
    cd intervals.icu
    ```
 2. **Install Dependencies**
-   No additional libraries are required, but you can use pip to install requests if it's not already installed:
+3. No additional libraries are required, but you can use pip to install requests if it's not already installed:
    ```bash
    pip install requests
    ````
 4. **Configure the Script**
-   Open the upload_trainings.py file.
-   Replace the placeholders:
+   - Open the upload_trainings.py file.
+   - Replace the placeholders:
       your_api_key with your API key from Intervals.icu.
       your_athlete_id with your athlete ID.
 
-5. **Prepare Your JSON File**
+6. **Prepare Your JSON File**
 
     Create a trainings.json file in the repository folder following this structure:
 
