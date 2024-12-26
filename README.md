@@ -24,12 +24,12 @@ A Python script to send training events from a JSON file to the [Intervals.icu](
    pip install requests
    ````
 3. **Configure the Script**
-    Open the upload_trainings.py file.
-    Replace the placeholders:
-        your_api_key with your API key from Intervals.icu.
-        your_athlete_id with your athlete ID.
+   Open the upload_trainings.py file.
+   Replace the placeholders:
+      your_api_key with your API key from Intervals.icu.
+      your_athlete_id with your athlete ID.
 
-4. **Prepare Your JSON File**
+5. **Prepare Your JSON File**
 
     Create a trainings.json file in the repository folder following this structure:
 
@@ -54,8 +54,8 @@ A Python script to send training events from a JSON file to the [Intervals.icu](
    python3 upload_trainings.py
    ```
 2. **Verify on Intervals.icu**
-  Log in to your Intervals.icu account.
-  Check the calendar for the uploaded events.
+   - Log in to your Intervals.icu account.
+   - Check the calendar for the uploaded events.
 
 ## Year Planning and Training Schedule
 I used ChatGPT to generate a full year planning and monthly training schedules in JSON format. This ensures a structured approach to achieving cycling, swimming, and running goals, aligned with specific events throughout the year.
