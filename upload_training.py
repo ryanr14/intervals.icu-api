@@ -27,12 +27,20 @@ def load_trainings(file_path):
 def format_training_data(trainings):
     formatted_data = []
     for training in trainings["trainings"]:
+        # Determine whether it's cycling, running, or swimming
+        if "Bike" in training["name"]:
+            intensity_unit = "FTP"
+        elif "Run" in training["name"] or "Swim" in training["name"]:
+            intensity_unit = "HR"
+        else:
+            intensity_unit = "Intensity"
+
         formatted_data.append({
             "start_date_local": training["date"] + "T00:00:00",  # Ensure proper date format
             "category": "WORKOUT",
             "name": training["name"],
             "description": "\n".join(
-                [f"- {step['duration']} sec at {step['power']*100}% FTP" for step in training["steps"]]
+                [f"- {step['duration']}s at {step['power']*100}% {intensity_unit}" for step in training["steps"]]
             ),
             "type": "Ride" if "Bike" in training["name"] else "Run" if "Run" in training["name"] else "Swim",
             "moving_time": sum(step["duration"] for step in training["steps"]),
