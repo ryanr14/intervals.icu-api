@@ -27,24 +27,38 @@ def load_trainings(file_path):
 def format_training_data(trainings):
     formatted_data = []
     for training in trainings["trainings"]:
-        # Determine whether it's cycling, running, or swimming
-        if "Bike" in training["name"]:
-            intensity_unit = "FTP"
-        elif "Run" in training["name"] or "Swim" in training["name"]:
-            intensity_unit = "HR"
-        else:
-            intensity_unit = "Intensity"
+        # Generate a formatted description with proper labels and HR for running/swimming
+        description_lines = []
+        for step in training["steps"]:
+            if "Run" in training["name"] or "Swim" in training["name"]:
+                description_lines.append(f"{step['description']}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} HR")
+            else:
+                description_lines.append(f"{step['description']}")
+                description_lines.append(f"- {step['duration']} in {step['zone']}")
+
+            description_lines.append("")  # Add blank line after each step for readability
 
         formatted_data.append({
-            "start_date_local": training["date"] + "T00:00:00",  # Ensure proper date format
+            "start_date_local": training["date"] + "T00:00:00",
             "category": "WORKOUT",
             "name": training["name"],
-            "description": "\n".join(
-                [f"- {step['duration']}s at {step['power']*100}% {intensity_unit}" for step in training["steps"]]
-            ),
+            "description": "\n".join(description_lines).strip(),
             "type": "Ride" if "Bike" in training["name"] else "Run" if "Run" in training["name"] else "Swim",
-            "moving_time": sum(step["duration"] for step in training["steps"]),
-            "steps": training["steps"]  # Directly include the steps from the JSON
+            "moving_time": sum(
+                int(step["duration"].replace("m", "").replace("s", "")) * (60 if "m" in step["duration"] else 1)
+                for step in training["steps"]
+            ),
+            "steps": [
+                {
+                    "description": step.get("description", ""),
+                    "duration": step["duration"],
+                    "target_type": "zone",
+                    "target_value": step["zone"],
+                    "cadence": step.get("cadence", "Free")
+                }
+                for step in training["steps"]
+            ]
         })
     return formatted_data
 
