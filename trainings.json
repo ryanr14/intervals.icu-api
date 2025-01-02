@@ -16,20 +16,20 @@
             "date": "2025-01-15",
             "name": "Swim - Technique Focus",
             "steps": [
-                {"duration": "200m", "zone": "Z1", "description": "Warm-up"},
-                {"duration": "50m", "zone": "Z2", "description": "Drill - catch-up stroke"},
-                {"duration": "50m", "zone": "Z2", "description": "Drill - breathing every 3 strokes"},
-                {"duration": "50m", "zone": "Z2", "description": "Drill - one-arm swimming"},
-                {"duration": "200m", "zone": "Z1", "description": "Cool-down"}
+                {"duration": "200m", "zone": "Z1 HR", "description": "Warm-up"},
+                {"duration": "50m", "zone": "Z2 HR", "description": "Drill - catch-up stroke"},
+                {"duration": "50m", "zone": "Z2 HR", "description": "Drill - breathing every 3 strokes"},
+                {"duration": "50m", "zone": "Z2 HR", "description": "Drill - one-arm swimming"},
+                {"duration": "200m", "zone": "Z1 HR", "description": "Cool-down"}
             ]
         },
         {
             "date": "2025-01-16",
             "name": "Run - Easy Tempo",
             "steps": [
-                {"duration": "10m", "zone": "Z2", "description": "Warm-up"},
-                {"duration": "20m", "zone": "Z3", "description": "Moderate effort"},
-                {"duration": "10m", "zone": "Z1", "description": "Cool-down"}
+                {"duration": "10m", "zone": "Z2 HR", "description": "Warm-up"},
+                {"duration": "20m", "zone": "Z3 HR", "description": "Moderate effort"},
+                {"duration": "10m", "zone": "Z1 HR", "description": "Cool-down"}
             ]
         }
     ]
