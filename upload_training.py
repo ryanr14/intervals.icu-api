@@ -7,7 +7,7 @@ from datetime import datetime
 ATHLETE_ID = "ID"  # Replace with your athlete ID
 API_KEY = "API_KEY"        # Replace with your API key
 BASE_URL = "https://intervals.icu/api/v1/athlete"
-
+ZONE_TYPE = "HR" #"Pace"
 # Encode "API_KEY:api_key" in Base64 for the Authorization header
 def encode_auth(api_key):
     token = f"API_KEY:{api_key}".encode("utf-8")
@@ -32,10 +32,10 @@ def format_training_data(trainings):
         for step in training["steps"]:
             if "Run" in training["name"] or "Swim" in training["name"]:
                 description_lines.append(f"{step['description']}")
-                description_lines.append(f"- {step['duration']} in {step['zone']} HR")
+                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
             else:
                 description_lines.append(f"{step['description']}")
-                description_lines.append(f"- {step['duration']} in {step['zone']}")
+                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
 
             description_lines.append("")  # Add blank line after each step for readability
 
@@ -46,7 +46,7 @@ def format_training_data(trainings):
             "description": "\n".join(description_lines).strip(),
             "type": "Ride" if "Bike" in training["name"] else "Run" if "Run" in training["name"] else "Swim",
             "moving_time": sum(
-                int(step["duration"].replace("m", "").replace("s", "")) * (60 if "m" in step["duration"] else 1)
+                int(step["duration"].replace("km", "").replace("m", "").replace("s", "")) * (60 if "m" in step["duration"] else 1)
                 for step in training["steps"]
             ),
             "steps": [
