@@ -20,41 +20,26 @@ A Python script to send training events from a JSON file to the [Intervals.icu](
    cd intervals.icu
    ```
 2. **Install Dependencies**
-3. No additional libraries are required, but you can use pip to install requests if it's not already installed:
+   No additional libraries are required, but you can use pip to install requests if it's not already installed:
    ```bash
    pip install requests
    ````
-4. **Configure the Script**
+3. **Configure the Script**
    - Open the upload_trainings.py file.
    - Replace the placeholders:
         - your_api_key with your API key from Intervals.icu.
         - your_athlete_id with your athlete ID.
 
-6. **Prepare Your JSON File**
-
-    Create a trainings.json file in the repository folder following this structure:
-
-        {
-            "trainings": [
-                {
-                    "date": "2025-01-14",
-                    "name": "Bike - VO2 Max Intervals",
-                    "steps": [
-                        {"duration": 600, "power": 0.6},
-                        {"duration": 180, "power": 1.2},
-                        {"duration": 180, "power": 0.5}
-                    ]
-                }
-            ]
-        }
-
 ## Usage
 
-1. **Run the Script**
+1. **Create your schedule**
+   I made a custom GPT [Coach GPT for Intervals.icu](https://chatgpt.com/g/g-677d1b637658819198026d2a7daaa1d8-coach-gpt-for-intervals-icu) that you can use to create a trainingsplan for an event. It works like the Annual Training Plan (ATP), so you can add multiple events (A,B or C events). When your happy with the plan the GPT will ask you to generate it as a JSON. Save this file as training.json in the same directory as the script.
+
+2. **Run the Script**
    ```
    python3 upload_trainings.py
    ```
-2. **Verify on Intervals.icu**
+3. **Verify on Intervals.icu**
    - Log in to your Intervals.icu account.
    - Check the calendar for the uploaded events.
 
