@@ -28,10 +28,10 @@ A Python/Powershell script to send training events from a JSON file to the [Inte
 ## Usage
 
 1. **Create your schedule**
-   I made a custom GPT [Coach GPT for Intervals.icu](https://chatgpt.com/g/g-677d1b637658819198026d2a7daaa1d8-coach-gpt-for-intervals-icu) that you can use to create a trainingsplan for an event. It works like the Annual Training Plan (ATP), so you can add multiple events (A,B or C events). When your happy with the plan the GPT will ask you to generate it as a JSON. Save this file as training.json in the same directory as the script.
+I made a custom GPT [Coach GPT for Intervals.icu](https://chatgpt.com/g/g-677d1b637658819198026d2a7daaa1d8-coach-gpt-for-intervals-icu) that you can use to create a trainingsplan for an event. It works like the Annual Training Plan (ATP), so you can add multiple events (A,B or C events). When your happy with the plan the GPT will ask you to generate it as a JSON. Save this file as training.json in the same directory as the script.
 
 2. **Run the Script**
-   Python
+Python
    ```
    python3 upload_trainings.py
    ```
@@ -44,7 +44,7 @@ A Python/Powershell script to send training events from a JSON file to the [Inte
    - Check the calendar for the uploaded events.
 
 ## Support Intervals.icu
-Make sure to subscribe to Intervals.icu to support the hard work David Tinker puts into maintaining this incredible tool for athletes!
+Make sure to subscribe to [Intervals.icu](https://intervals.icu/settings) to support the hard work David Tinker puts into maintaining this incredible tool for athletes!
 
 ## Contributing
 Feel free to contribute to the project by submitting issues or pull requests. Contributions are welcome!
