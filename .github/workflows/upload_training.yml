@@ -32,15 +32,19 @@ jobs:
         && sudo apt install gh -y
     
     - name: Download attachment
+      id: download
       run: |
         ATTACHMENT_URL=$(echo "${{ github.event.issue.body }}" | grep -o 'https://.*\.json')
         if [ -z "$ATTACHMENT_URL" ]; then
           echo "No JSON file URL found in issue body"
+          echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         fi
         curl -L -o training.json "$ATTACHMENT_URL"
+        echo "success=true" >> $GITHUB_OUTPUT
         
     - name: Create config file
+      if: steps.download.outputs.success == 'true'
       env:
         ATHLETE_ID: ${{ secrets.ATHLETE_ID }}
         API_KEY: ${{ secrets.API_KEY }}
@@ -49,15 +53,37 @@ jobs:
         sed -i "s/API_KEY = \"API_KEY\"/API_KEY = \"$API_KEY\"/" upload_training.py
         
     - name: Run upload script
-      run: python upload_training.py training.json
+      if: steps.download.outputs.success == 'true'
+      id: upload
+      continue-on-error: true
+      run: |
+        if [ ! -f "training.json" ]; then
+          echo "Training file not found"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        python upload_training.py training.json
+        echo "success=true" >> $GITHUB_OUTPUT
       
     - name: Comment on issue
       uses: actions/github-script@v6
       with:
         script: |
+          const downloadSuccess = '${{ steps.download.outputs.success }}' === 'true';
+          const uploadSuccess = '${{ steps.upload.outputs.success }}' === 'true';
+          
+          let message;
+          if (!downloadSuccess) {
+            message = 'Failed to download the training file. Please make sure you attached a .json file to the issue.';
+          } else if (!uploadSuccess) {
+            message = 'Failed to process the training file. Please check the file format and try again.';
+          } else {
+            message = 'Training data has been processed and uploaded successfully.';
+          }
+          
           github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
-            body: 'Training data has been processed and uploaded.'
+            body: message
           })
