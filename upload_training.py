@@ -72,13 +72,16 @@ def format_training_data(trainings):
 
 # Upload training data
 def upload_trainings(data):
-    url = f"{BASE_URL}/{ATHLETE_ID}/events/bulk"
-    response = requests.post(url, headers=HEADERS, json=data)
+    url = f"https://intervals.icu/api/v1/athlete/{ATHLETE_ID}/events/bulk"
+    response = requests.post(url, headers={
+        "Authorization": f"Basic {encode_auth(API_KEY)}",
+        "Content-Type": "application/json"
+    }, json=data)
     if response.status_code == 200:
         print("Trainings uploaded successfully.")
     else:
         print(f"Failed to upload trainings. Status code: {response.status_code}")
-        print("Response text:", response.text)  # Log the response text for debugging
+        print("Response text:", response.text)
 
 # Main function
 def main():
