@@ -31,8 +31,12 @@ def format_training_data(trainings):
         # Generate a formatted description with proper labels and HR for running/swimming
         description_lines = []
         for step in training["steps"]:
-            description_lines.append(f"{step['description']}")
-            description_lines.append(f"- {step['duration']} in {step['zone']} {ZONE_TYPE}")
+            if "Run" in training["name"] or "Swim" in training["name"]:
+                description_lines.append(f"{step['description']}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+            else:
+                description_lines.append(f"{step['description']}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
 
             description_lines.append("")  # Add blank line after each step for readability
 
