@@ -26,16 +26,16 @@ def load_trainings(file_path):
 # Format training data for API
 def format_training_data(trainings):
     formatted_data = []
-    for training in trainings["trainings"]:
-        # Generate a formatted description with proper labels and HR for running/swimming
+    for training in trainings.get("trainings", []):  # Use .get() to avoid KeyError
         description_lines = []
-        for step in training["steps"]:
+        steps = training.get("steps", [])  # Default to an empty list if 'steps' is missing
+        for step in steps:
             if "Run" in training["name"] or "Swim" in training["name"]:
                 description_lines.append(f"{step['description']}")
-                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {ZONE_TYPE}")
             else:
                 description_lines.append(f"{step['description']}")
-                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {ZONE_TYPE}")
 
             description_lines.append("")  # Add blank line after each step for readability
 
@@ -47,7 +47,7 @@ def format_training_data(trainings):
             "type": "Ride" if "Bike" in training["name"] else "Run" if "Run" in training["name"] else "Swim",
             "moving_time": sum(
                 int(step["duration"].replace("km", "").replace("m", "").replace("s", "")) * (60 if "m" in step["duration"] else 1)
-                for step in training["steps"]
+                for step in steps  # Use the steps variable
             ),
             "steps": [
                 {
@@ -57,7 +57,7 @@ def format_training_data(trainings):
                     "target_value": step["zone"],
                     "cadence": step.get("cadence", "Free")
                 }
-                for step in training["steps"]
+                for step in steps  # Use the steps variable
             ]
         })
     return formatted_data
