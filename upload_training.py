@@ -1,24 +1,14 @@
-import os
 import requests
 import json
 import base64
-import logging
-
-# Configure logging
-logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
+from datetime import datetime
 
 # Configuration
-ATHLETE_ID = "i54099"
-API_KEY = "4qn0iy52g2mwy4w79qw125op1"
-if not ATHLETE_ID or not API_KEY:
-    raise ValueError("Missing required environment variables: ATHLETE_ID and/or API_KEY.")
-
+ATHLETE_ID = "i54099"  # Replace with your athlete ID
+API_KEY = "4qn0iy52g2mwy4w79qw125op1"        # Replace with your API key
 BASE_URL = "https://intervals.icu/api/v1/athlete"
-ZONE_TYPE = "HR"  # Can be "HR" or "Pace"
-
-
+ZONE_TYPE = "HR" #"Pace"
 # Encode "API_KEY:api_key" in Base64 for the Authorization header
-
 def encode_auth(api_key):
     token = f"API_KEY:{api_key}".encode("utf-8")
     return base64.b64encode(token).decode("utf-8")
@@ -28,56 +18,37 @@ HEADERS = {
     "Content-Type": "application/json"
 }
 
+# Load training data
 def load_trainings(file_path):
-    """
-    Load training data from a JSON file.
-    """
-    try:
-        with open(file_path, "r") as file:
-            return json.load(file)
-    except FileNotFoundError:
-        logging.error(f"Training file '{file_path}' not found.")
-        raise
-    except json.JSONDecodeError as e:
-        logging.error(f"Error decoding JSON from file '{file_path}': {e}")
-        raise
-    except Exception as e:
-        logging.error(f"Unexpected error loading training file '{file_path}': {e}")
-        raise
+    with open(file_path, "r") as file:
+        return json.load(file)
 
-def parse_duration(duration):
-    """
-    Parse duration from strings like 'km', 'm', or 's' and convert to seconds.
-    """
-    try:
-        if "km" in duration or "m" in duration:
-            return int(duration.replace("km", "").replace("m", "").strip()) * 60
-        elif "s" in duration:
-            return int(duration.replace("s", "").strip())
-        else:
-            logging.warning(f"Unrecognized duration format: '{duration}'. Defaulting to 0.")
-            return 0
-    except ValueError:
-        logging.error(f"Failed to parse duration: '{duration}'.")
-        return 0
-
+# Format training data for API
 def format_training_data(trainings):
-    """
-    Format raw training data into the required API format.
-    """
     formatted_data = []
-    for training in trainings.get("trainings", []):
-        description_lines = [
-            f"{step['description']}\n- {step['duration']} in {step['zone']} {ZONE_TYPE}"
-            for step in training.get("steps", [])
-        ]
+    for training in trainings["trainings"]:
+        # Generate a formatted description with proper labels and HR for running/swimming
+        description_lines = []
+        for step in training["steps"]:
+            if "Run" in training["name"] or "Swim" in training["name"]:
+                description_lines.append(f"{step['description']}")
+                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+            else:
+                description_lines.append(f"{step['description']}")
+                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+
+            description_lines.append("")  # Add blank line after each step for readability
+
         formatted_data.append({
-            "start_date_local": f"{training['date']}T00:00:00",
+            "start_date_local": training["date"] + "T00:00:00",
             "category": "WORKOUT",
             "name": training["name"],
             "description": "\n".join(description_lines).strip(),
             "type": "Ride" if "Bike" in training["name"] else "Run" if "Run" in training["name"] else "Swim",
-            "moving_time": sum(parse_duration(step["duration"]) for step in training.get("steps", [])),
+            "moving_time": sum(
+                int(step["duration"].replace("km", "").replace("m", "").replace("s", "")) * (60 if "m" in step["duration"] else 1)
+                for step in training["steps"]
+            ),
             "steps": [
                 {
                     "description": step.get("description", ""),
@@ -86,43 +57,29 @@ def format_training_data(trainings):
                     "target_value": step["zone"],
                     "cadence": step.get("cadence", "Free")
                 }
-                for step in training.get("steps", [])
+                for step in training["steps"]
             ]
         })
     return formatted_data
 
+# Upload training data
 def upload_trainings(data):
-    """ 
-    Upload formatted training data to the API.
-    """
     url = f"{BASE_URL}/{ATHLETE_ID}/events/bulk"
-    try:
-        logging.info(f"Uploading to URL: {url}")
-        logging.info(f"Request Headers: {HEADERS}")
-        response = requests.post(url, headers=HEADERS, json=data)
-        if 200 <= response.status_code < 300:
-            logging.info("Trainings uploaded successfully.")
-        else:
-            logging.error(f"Failed to upload trainings. Status code: {response.status_code}\n{response.text}")
-    except requests.RequestException as e:
-        logging.error(f"Error during API request: {e}")
-        raise
+    response = requests.post(url, headers=HEADERS, json=data)
+    if response.status_code == 200:
+        print("Trainings uploaded successfully.")
+    else:
+        print(f"Failed to upload trainings. Status code: {response.status_code}")
+        print(response.text)
 
+# Main function
 def main():
-    """
-    Main function to load, format, and upload training data.
-    """
-    file_path = "training.json"  # You can make this configurable via CLI args or env vars
     try:
-        logging.info("Loading training data...")
-        trainings = load_trainings(file_path)
-        logging.info("Formatting training data...")
+        trainings = load_trainings("trainings.json")
         formatted_data = format_training_data(trainings)
-        logging.info("Uploading training data...")
         upload_trainings(formatted_data)
-        logging.info("Process completed successfully.")
     except Exception as e:
-        logging.error(f"Process failed: {e}")
+        print(f"Error: {e}")
 
 if __name__ == "__main__":
     main()
