@@ -2,6 +2,7 @@ import requests
 import json
 import base64
 from datetime import datetime
+import sys
 
 # Configuration
 ATHLETE_ID = "ID"  # Replace with your athlete ID
@@ -32,10 +33,10 @@ def format_training_data(trainings):
         for step in training["steps"]:
             if "Run" in training["name"] or "Swim" in training["name"]:
                 description_lines.append(f"{step['description']}")
-                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
             else:
                 description_lines.append(f"{step['description']}")
-                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
 
             description_lines.append("")  # Add blank line after each step for readability
 
@@ -75,7 +76,9 @@ def upload_trainings(data):
 # Main function
 def main():
     try:
-        trainings = load_trainings("trainings.json")
+        # Get file path from command line argument, default to "trainings.json"
+        file_path = sys.argv[1] if len(sys.argv) > 1 else "trainings.json"
+        trainings = load_trainings(file_path)
         formatted_data = format_training_data(trainings)
         upload_trainings(formatted_data)
     except Exception as e:

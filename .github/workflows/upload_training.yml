@@ -1,0 +1,45 @@
+name: Upload Training Data
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-attachment:
+    if: contains(github.event.issue.body, '.json')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+    
+    - name: Download attachment
+      run: |
+        ATTACHMENT_URL=$(echo "${{ github.event.issue.body }}" | grep -o 'https://.*\.json')
+        curl -L -o training.json "$ATTACHMENT_URL"
+        
+    - name: Create config file
+      env:
+        ATHLETE_ID: ${{ secrets.ATHLETE_ID }}
+        API_KEY: ${{ secrets.API_KEY }}
+      run: |
+        sed -i "s/ATHLETE_ID = \"ID\"/ATHLETE_ID = \"$ATHLETE_ID\"/" upload_training.py
+        sed -i "s/API_KEY = \"API_KEY\"/API_KEY = \"$API_KEY\"/" upload_training.py
+        
+    - name: Run upload script
+      run: python upload_training.py training.json
+      
+    - name: Comment on issue
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      run: |
+        gh issue comment ${{ github.event.issue.number }} --body "Training data has been processed and uploaded."
