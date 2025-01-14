@@ -16,11 +16,12 @@ if not ATHLETE_ID or not API_KEY:
 BASE_URL = "https://intervals.icu/api/v1/athlete"
 ZONE_TYPE = "HR"  # Can be "HR" or "Pace"
 
+
+# Encode "API_KEY:api_key" in Base64 for the Authorization header
+
 def encode_auth(api_key):
-    """
-    Encode API key in Base64 for Authorization header.
-    """
-    return base64.b64encode(api_key.encode("utf-8")).decode("utf-8")
+    token = f"API_KEY:{api_key}".encode("utf-8")
+    return base64.b64encode(token).decode("utf-8")
 
 HEADERS = {
     "Authorization": f"Basic {encode_auth(API_KEY)}",
