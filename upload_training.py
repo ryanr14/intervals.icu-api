@@ -1,13 +1,15 @@
+import os
 import requests
 import json
 import base64
 from datetime import datetime
 
 # Configuration
-ATHLETE_ID = "ID"  # Replace with your athlete ID
-API_KEY = "API_KEY"        # Replace with your API key
+ATHLETE_ID = os.environ.get("ATHLETE_ID")  # Get from GitHub Secrets
+API_KEY = os.environ.get("API_KEY")        # Get from GitHub Secrets
 BASE_URL = "https://intervals.icu/api/v1/athlete"
-ZONE_TYPE = "HR" #"Pace"
+ZONE_TYPE = "HR"  # "Pace"
+
 # Encode "API_KEY:api_key" in Base64 for the Authorization header
 def encode_auth(api_key):
     token = f"API_KEY:{api_key}".encode("utf-8")
@@ -27,7 +29,6 @@ def load_trainings(file_path):
 def format_training_data(trainings):
     formatted_data = []
     for training in trainings["trainings"]:
-        # Generate a formatted description with proper labels and HR for running/swimming
         description_lines = []
         for step in training["steps"]:
             if "Run" in training["name"] or "Swim" in training["name"]:
