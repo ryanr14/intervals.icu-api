@@ -33,57 +33,85 @@ jobs:
     
     - name: Download attachment
       id: download
+      continue-on-error: true
       run: |
         ATTACHMENT_URL=$(echo "${{ github.event.issue.body }}" | grep -o 'https://.*\.json')
         if [ -z "$ATTACHMENT_URL" ]; then
-          echo "No JSON file URL found in issue body"
+          echo "::error::No JSON file URL found in issue body"
           echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         fi
         curl -L -o training.json "$ATTACHMENT_URL"
-        echo "success=true" >> $GITHUB_OUTPUT
+        if [ -f "training.json" ]; then
+          echo "success=true" >> $GITHUB_OUTPUT
+        else
+          echo "::error::Failed to download training.json"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
         
     - name: Create config file
-      if: steps.download.outputs.success == 'true'
+      if: success()
+      id: config
+      continue-on-error: true
       env:
         ATHLETE_ID: ${{ secrets.ATHLETE_ID }}
         API_KEY: ${{ secrets.API_KEY }}
       run: |
+        if [ -z "$ATHLETE_ID" ] || [ -z "$API_KEY" ]; then
+          echo "::error::Missing required secrets"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
         sed -i "s/ATHLETE_ID = \"ID\"/ATHLETE_ID = \"$ATHLETE_ID\"/" upload_training.py
         sed -i "s/API_KEY = \"API_KEY\"/API_KEY = \"$API_KEY\"/" upload_training.py
+        echo "success=true" >> $GITHUB_OUTPUT
         
     - name: Run upload script
-      if: steps.download.outputs.success == 'true'
+      if: success()
       id: upload
       continue-on-error: true
       run: |
         if [ ! -f "training.json" ]; then
-          echo "Training file not found"
+          echo "::error::Training file not found"
           echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         fi
-        python upload_training.py training.json
+        if [ ! -f "upload_training.py" ]; then
+          echo "::error::Upload script not found"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        python upload_training.py training.json || {
+          echo "::error::Failed to run upload script"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        }
         echo "success=true" >> $GITHUB_OUTPUT
       
     - name: Comment on issue
+      if: always()
       uses: actions/github-script@v6
       with:
         script: |
           const downloadSuccess = '${{ steps.download.outputs.success }}' === 'true';
+          const configSuccess = '${{ steps.config.outputs.success }}' === 'true';
           const uploadSuccess = '${{ steps.upload.outputs.success }}' === 'true';
           
           let message;
           if (!downloadSuccess) {
-            message = 'Failed to download the training file. Please make sure you attached a .json file to the issue.';
+            message = '❌ Failed to download the training file. Please make sure you attached a .json file to the issue.';
+          } else if (!configSuccess) {
+            message = '❌ Failed to configure the upload script. Please contact the repository administrator.';
           } else if (!uploadSuccess) {
-            message = 'Failed to process the training file. Please check the file format and try again.';
+            message = '❌ Failed to process the training file. Please check the file format and try again.';
           } else {
-            message = 'Training data has been processed and uploaded successfully.';
+            message = '✅ Training data has been processed and uploaded successfully.';
           }
           
-          github.rest.issues.createComment({
+          await github.rest.issues.createComment({
             issue_number: context.issue.number,
             owner: context.repo.owner,
             repo: context.repo.repo,
             body: message
-          })
+          });
