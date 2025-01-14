@@ -41,6 +41,15 @@ jobs:
           echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         fi
+        
+        # Extract filename from URL
+        FILENAME=$(basename "$ATTACHMENT_URL")
+        if [ "$FILENAME" != "training.json" ]; then
+          echo "::error::Incorrect filename. Please rename your file to 'training.json'"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
         curl -L -o training.json "$ATTACHMENT_URL"
         if [ -f "training.json" ]; then
           echo "success=true" >> $GITHUB_OUTPUT
@@ -100,7 +109,9 @@ jobs:
           
           let message;
           if (!downloadSuccess) {
-            message = '❌ Failed to download the training file. Please make sure you attached a .json file to the issue.';
+            message = '❌ Failed to download the training file. Please make sure:\n' +
+                     '1. You attached a JSON file to the issue\n' +
+                     '2. The file is named exactly as "training.json"';
           } else if (!configSuccess) {
             message = '❌ Failed to configure the upload script. Please contact the repository administrator.';
           } else if (!uploadSuccess) {
