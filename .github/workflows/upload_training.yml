@@ -59,35 +59,19 @@ jobs:
           exit 1
         fi
         
-    - name: Create config file
-      if: success()
-      id: config
-      continue-on-error: true
-      env:
-        ATHLETE_ID: ${{ secrets.ATHLETE_ID }}
-        API_KEY: ${{ secrets.API_KEY }}
-      run: |
-        if [ -z "$ATHLETE_ID" ] || [ -z "$API_KEY" ]; then
-          echo "::error::Missing required secrets"
-          echo "success=false" >> $GITHUB_OUTPUT
-          exit 1
-        fi
-        sed -i "s/ATHLETE_ID = \"ID\"/ATHLETE_ID = \"$ATHLETE_ID\"/" upload_training.py
-        sed -i "s/API_KEY = \"API_KEY\"/API_KEY = \"$API_KEY\"/" upload_training.py
-        echo "success=true" >> $GITHUB_OUTPUT
-        
     - name: Run upload script
       if: success()
       id: upload
       continue-on-error: true
+      env:
+        ATHLETE_ID: ${{ secrets.ATHLETE_ID }}
+        API_KEY: ${{ secrets.API_KEY }}
       run: |
         echo "Current directory: $(pwd)"
         echo "Directory contents: $(ls -la)"
         echo "Python version: $(python --version)"
         echo "Training.json contents:"
         cat training.json || echo "Cannot read training.json"
-        echo "Upload script contents:"
-        cat upload_training.py || echo "Cannot read upload_training.py"
         
         if [ ! -f "training.json" ]; then
           echo "::error::Training file not found"

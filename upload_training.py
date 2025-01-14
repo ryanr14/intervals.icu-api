@@ -3,12 +3,19 @@ import json
 import base64
 from datetime import datetime
 import sys
+import os
 
 # Configuration
-ATHLETE_ID = "ID"  # Replace with your athlete ID
-API_KEY = "API_KEY"        # Replace with your API key
+ATHLETE_ID = os.environ.get("ATHLETE_ID")  # Get from environment variable
+API_KEY = os.environ.get("API_KEY")        # Get from environment variable
 BASE_URL = "https://intervals.icu/api/v1/athlete"
 ZONE_TYPE = "HR" #"Pace"
+
+# Check for required environment variables
+if not ATHLETE_ID or not API_KEY:
+    print("Error: ATHLETE_ID and API_KEY environment variables are required")
+    sys.exit(1)
+
 # Encode "API_KEY:api_key" in Base64 for the Authorization header
 def encode_auth(api_key):
     token = f"API_KEY:{api_key}".encode("utf-8")
