@@ -86,11 +86,14 @@ jobs:
           exit 1
         fi
         
+        # Check if training.json exists
         if [ ! -f "training.json" ]; then
           echo "::error::Training file not found"
           echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         fi
+        
+        # Check if upload_training.py exists
         if [ ! -f "upload_training.py" ]; then
           echo "::error::Upload script not found"
           echo "success=false" >> $GITHUB_OUTPUT
@@ -101,9 +104,12 @@ jobs:
         python -u upload_training.py training.json || {
           echo "::error::Failed to run upload script"
           echo "Python exit code: $?"
+          echo "Output from the script:"
+          echo "$(python -u upload_training.py training.json 2>&1)"  # Capture and print the output
           echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         }
+        
         echo "success=true" >> $GITHUB_OUTPUT
       
     - name: Comment on issue
