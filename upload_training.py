@@ -96,6 +96,8 @@ def upload_trainings(data):
     """
     url = f"{BASE_URL}/{ATHLETE_ID}/events/bulk"
     try:
+        logging.info(f"Uploading to URL: {url}")
+        logging.info(f"Request Headers: {HEADERS}")
         response = requests.post(url, headers=HEADERS, json=data)
         if 200 <= response.status_code < 300:
             logging.info("Trainings uploaded successfully.")
