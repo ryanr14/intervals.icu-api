@@ -68,7 +68,7 @@ def upload_trainings(data):
 
 if __name__ == "__main__":
     try:
-        trainings = load_trainings("data/training.json")
+        trainings = load_trainings("training.json")
         formatted_data = format_training_data(trainings)
         upload_trainings(formatted_data)
     except Exception as e:
