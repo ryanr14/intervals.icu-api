@@ -32,10 +32,10 @@ def format_training_data(trainings):
         for step in training["steps"]:
             if "Run" in training["name"] or "Swim" in training["name"]:
                 description_lines.append(f"{step['description']}")
-                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
             else:
                 description_lines.append(f"{step['description']}")
-                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+                description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
 
             description_lines.append("")  # Add blank line after each step for readability
 
