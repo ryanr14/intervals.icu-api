@@ -81,6 +81,14 @@ jobs:
       id: upload
       continue-on-error: true
       run: |
+        echo "Current directory: $(pwd)"
+        echo "Directory contents: $(ls -la)"
+        echo "Python version: $(python --version)"
+        echo "Training.json contents:"
+        cat training.json || echo "Cannot read training.json"
+        echo "Upload script contents:"
+        cat upload_training.py || echo "Cannot read upload_training.py"
+        
         if [ ! -f "training.json" ]; then
           echo "::error::Training file not found"
           echo "success=false" >> $GITHUB_OUTPUT
@@ -91,8 +99,11 @@ jobs:
           echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         fi
-        python upload_training.py training.json || {
+        
+        echo "Attempting to run upload script..."
+        python -u upload_training.py training.json || {
           echo "::error::Failed to run upload script"
+          echo "Python exit code: $?"
           echo "success=false" >> $GITHUB_OUTPUT
           exit 1
         }
