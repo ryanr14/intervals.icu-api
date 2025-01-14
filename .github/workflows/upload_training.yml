@@ -52,8 +52,12 @@ jobs:
       run: python upload_training.py training.json
       
     - name: Comment on issue
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        gh auth login --with-token <<< "$GITHUB_TOKEN"
-        gh issue comment ${{ github.event.issue.number }} --body "Training data has been processed and uploaded."
+      uses: actions/github-script@v6
+      with:
+        script: |
+          github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: 'Training data has been processed and uploaded.'
+          })
