@@ -73,6 +73,19 @@ jobs:
         echo "Training.json contents:"
         cat training.json || echo "Cannot read training.json"
         
+        # Check if secrets are set
+        if [ -z "$ATHLETE_ID" ]; then
+          echo "::error::ATHLETE_ID is not set"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        if [ -z "$API_KEY" ]; then
+          echo "::error::API_KEY is not set"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
         if [ ! -f "training.json" ]; then
           echo "::error::Training file not found"
           echo "success=false" >> $GITHUB_OUTPUT
