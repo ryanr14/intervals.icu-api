@@ -83,8 +83,8 @@ def upload_trainings(data):
 # Main function
 def main():
     try:
-        # Get file path from command line argument, default to "trainings.json"
-        file_path = sys.argv[1] if len(sys.argv) > 1 else "trainings.json"
+        # Get file path from command line argument, default to "training.json"
+        file_path = sys.argv[1] if len(sys.argv) > 1 else "training.json"
         trainings = load_trainings(file_path)
         formatted_data = format_training_data(trainings)
         upload_trainings(formatted_data)
