@@ -78,7 +78,7 @@ def upload_trainings(data):
         print("Trainings uploaded successfully.")
     else:
         print(f"Failed to upload trainings. Status code: {response.status_code}")
-        print(response.text)
+        print("Response text:", response.text)  # Log the response text for debugging
 
 # Main function
 def main():
