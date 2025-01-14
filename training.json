@@ -1,0 +1,67 @@
+{
+    "trainings": [
+        {
+            "date": "2025-01-16",
+            "name": "Base Endurance Ride",
+            "description": "2-hour Z2 ride. Focus on steady, comfortable pacing.",
+            "duration": "2h",
+            "type": "outdoor"
+        },
+        {
+            "date": "2025-01-18",
+            "name": "Tempo Intervals",
+            "description": "3x10min @ 80-85% FTP with 5min recovery. Build sustained power.",
+            "duration": "1h",
+            "type": "indoor/outdoor"
+        },
+        {
+            "date": "2025-01-20",
+            "name": "Big Gear Climbing Intervals",
+            "description": "5x6min @ 70rpm in Z3 with 3min recovery. Build climbing-specific strength.",
+            "duration": "1.5h",
+            "type": "indoor/outdoor"
+        },
+        {
+            "date": "2025-01-23",
+            "name": "Tempo Intervals",
+            "description": "3x15min @ 80-85% FTP with 5min recovery. Develop sustained power.",
+            "duration": "1.5h",
+            "type": "indoor/outdoor"
+        },
+        {
+            "date": "2025-01-25",
+            "name": "Big Gear Climbing Intervals",
+            "description": "6x5min @ 70rpm in Z3 with 3min recovery. Build climbing-specific strength.",
+            "duration": "1.5h",
+            "type": "indoor/outdoor"
+        },
+        {
+            "date": "2025-01-27",
+            "name": "Base Endurance Ride",
+            "description": "3-hour Z2 ride. Focus on consistent pacing and fuel practice.",
+            "duration": "3h",
+            "type": "outdoor"
+        },
+        {
+            "date": "2025-01-30",
+            "name": "Big Gear Climbing Intervals",
+            "description": "5x6min @ 70rpm in Z3 with 3min recovery. Build climbing-specific strength.",
+            "duration": "1.5h",
+            "type": "indoor/outdoor"
+        },
+        {
+            "date": "2025-02-01",
+            "name": "Endurance Ride",
+            "description": "2.5-hour Z2 ride. Focus on steady pacing and aerobic development.",
+            "duration": "2.5h",
+            "type": "outdoor"
+        },
+        {
+            "date": "2025-02-03",
+            "name": "Base Endurance Ride",
+            "description": "3-hour Z2 ride. Practice consistent fueling for long events.",
+            "duration": "3h",
+            "type": "outdoor"
+        }
+    ]
+}

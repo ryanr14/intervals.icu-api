@@ -1,0 +1,139 @@
+name: Upload Training Data
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  process-attachment:
+    if: contains(github.event.issue.body, '.json')
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.x'
+        
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+        
+    - name: Install GitHub CLI
+      run: |
+        type -p curl >/dev/null || (sudo apt update && sudo apt install curl -y)
+        curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg \
+        && sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg \
+        && echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null \
+        && sudo apt update \
+        && sudo apt install gh -y
+    
+    - name: Download attachment
+      id: download
+      continue-on-error: true
+      run: |
+        ATTACHMENT_URL=$(echo "${{ github.event.issue.body }}" | grep -o 'https://.*\.json')
+        if [ -z "$ATTACHMENT_URL" ]; then
+          echo "::error::No JSON file URL found in issue body"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        # Extract filename from URL
+        FILENAME=$(basename "$ATTACHMENT_URL")
+        if [ "$FILENAME" != "training.json" ]; then
+          echo "::error::Incorrect filename. Please rename your file to 'training.json'"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        curl -L -o training.json "$ATTACHMENT_URL"
+        if [ -f "training.json" ]; then
+          echo "success=true" >> $GITHUB_OUTPUT
+        else
+          echo "::error::Failed to download training.json"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+    - name: Run upload script
+      if: success()
+      id: upload
+      continue-on-error: true
+      env:
+        ATHLETE_ID: ${{ secrets.ATHLETE_ID }}
+        API_KEY: ${{ secrets.API_KEY }}
+      run: |
+        echo "Current directory: $(pwd)"
+        echo "Directory contents: $(ls -la)"
+        echo "Python version: $(python --version)"
+        echo "Training.json contents:"
+        cat training.json || echo "Cannot read training.json"
+        
+        # Check if secrets are set
+        if [ -z "$ATHLETE_ID" ]; then
+          echo "::error::ATHLETE_ID is not set"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        if [ -z "$API_KEY" ]; then
+          echo "::error::API_KEY is not set"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        # Check if training.json exists
+        if [ ! -f "training.json" ]; then
+          echo "::error::Training file not found"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        # Check if upload_training.py exists
+        if [ ! -f "upload_training.py" ]; then
+          echo "::error::Upload script not found"
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        fi
+        
+        echo "Attempting to run upload script..."
+        python -u upload_training.py training.json || {
+          echo "::error::Failed to run upload script"
+          echo "Python exit code: $?"
+          echo "Output from the script:"
+          echo "$(python -u upload_training.py training.json 2>&1)"  # Capture and print the output
+          echo "success=false" >> $GITHUB_OUTPUT
+          exit 1
+        }
+        
+        echo "success=true" >> $GITHUB_OUTPUT
+      
+    - name: Comment on issue
+      if: always()
+      uses: actions/github-script@v6
+      with:
+        script: |
+          const downloadSuccess = '${{ steps.download.outputs.success }}' === 'true';
+          const uploadSuccess = '${{ steps.upload.outputs.success }}' === 'true';
+          
+          let message;
+          if (!downloadSuccess) {
+            message = '❌ Failed to download the training file. Please make sure:\n' +
+                     '1. You attached a JSON file to the issue\n' +
+                     '2. The file is named exactly as "training.json"';
+          } else if (!uploadSuccess) {
+            message = '❌ Failed to process the training file. Please check the file format and try again.';
+          } else {
+            message = '✅ Training data has been processed and uploaded successfully.';
+          }
+          
+          await github.rest.issues.createComment({
+            issue_number: context.issue.number,
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            body: message
+          });
