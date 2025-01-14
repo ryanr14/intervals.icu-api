@@ -118,7 +118,6 @@ jobs:
       with:
         script: |
           const downloadSuccess = '${{ steps.download.outputs.success }}' === 'true';
-          const configSuccess = '${{ steps.config.outputs.success }}' === 'true';
           const uploadSuccess = '${{ steps.upload.outputs.success }}' === 'true';
           
           let message;
@@ -126,8 +125,6 @@ jobs:
             message = '❌ Failed to download the training file. Please make sure:\n' +
                      '1. You attached a JSON file to the issue\n' +
                      '2. The file is named exactly as "training.json"';
-          } else if (!configSuccess) {
-            message = '❌ Failed to configure the upload script. Please contact the repository administrator.';
           } else if (!uploadSuccess) {
             message = '❌ Failed to process the training file. Please check the file format and try again.';
           } else {
