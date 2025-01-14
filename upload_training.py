@@ -8,8 +8,8 @@ import logging
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Configuration
-ATHLETE_ID = os.getenv("ATHLETE_ID")
-API_KEY = os.getenv("API_KEY")
+ATHLETE_ID = "i54099"
+API_KEY = "4qn0iy52g2mwy4w79qw125op1"
 if not ATHLETE_ID or not API_KEY:
     raise ValueError("Missing required environment variables: ATHLETE_ID and/or API_KEY.")
 
@@ -91,7 +91,7 @@ def format_training_data(trainings):
     return formatted_data
 
 def upload_trainings(data):
-    """
+    """ 
     Upload formatted training data to the API.
     """
     url = f"{BASE_URL}/{ATHLETE_ID}/events/bulk"
