@@ -1,0 +1,1 @@
+https://intervals.icu/api-docs.html#post-/api/v1/athlete/-id-/events/bulks
