@@ -75,7 +75,7 @@ def upload_trainings(data):
 # Main function
 def main():
     try:
-        trainings = load_trainings("trainings.json")
+        trainings = load_trainings("training.json")
         formatted_data = format_training_data(trainings)
         upload_trainings(formatted_data)
     except Exception as e:
