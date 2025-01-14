@@ -1,0 +1,30 @@
+name: Upload Training Data
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  upload:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'  # Specify the Python version you want to use
+
+      - name: Install dependencies
+        run: |
+          pip install requests  # Install any required packages
+
+      - name: Run upload_training.py
+        env:
+          ATHLETE_ID: ${{ secrets.ATHLETE_ID }}  # Use GitHub Secrets for sensitive data
+          API_KEY: ${{ secrets.API_KEY }}        # Use GitHub Secrets for sensitive data
+        run: |
+          python upload_training.py trainings.json  # Run the script with the training data file

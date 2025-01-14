@@ -2,10 +2,11 @@ import requests
 import json
 import base64
 from datetime import datetime
+import os
 
 # Configuration
-ATHLETE_ID = "ID"  # Replace with your athlete ID
-API_KEY = "API_KEY"        # Replace with your API key
+ATHLETE_ID = os.environ.get("ATHLETE_ID")  # Get from environment variable
+API_KEY = os.environ.get("API_KEY")        # Get from environment variable
 BASE_URL = "https://intervals.icu/api/v1/athlete"
 ZONE_TYPE = "HR" #"Pace"
 # Encode "API_KEY:api_key" in Base64 for the Authorization header
@@ -30,12 +31,8 @@ def format_training_data(trainings):
         # Generate a formatted description with proper labels and HR for running/swimming
         description_lines = []
         for step in training["steps"]:
-            if "Run" in training["name"] or "Swim" in training["name"]:
-                description_lines.append(f"{step['description']}")
-                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
-            else:
-                description_lines.append(f"{step['description']}")
-                 description_lines.append(f"- {step['duration']} in {step['zone']} {zone_type}")
+            description_lines.append(f"{step['description']}")
+            description_lines.append(f"- {step['duration']} in {step['zone']} {ZONE_TYPE}")
 
             description_lines.append("")  # Add blank line after each step for readability
 
